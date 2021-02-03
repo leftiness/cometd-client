@@ -1,0 +1,2 @@
+rootProject.name = 'cometd-client'
+include('app')
