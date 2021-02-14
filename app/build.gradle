@@ -13,6 +13,7 @@ dependencies {
     implementation 'org.cometd.java:cometd-java-client-http-okhttp:7.0.0'
     implementation 'org.cometd.java:cometd-java-client-websocket-okhttp:7.0.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.30'
+    implementation 'org.eclipse.jetty:jetty-util-ajax:11.0.0'
     testImplementation 'junit:junit:4.13'
 }
 

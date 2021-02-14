@@ -1,49 +1,42 @@
 package cometd.client.command;
 
-import kotlin.DeprecationLevel;
-
-import java.util.Map;
-import java.util.HashMap;
+import java.io.PrintStream;
 import java.util.concurrent.Callable;
 
-import okhttp3.OkHttpClient;
 import org.cometd.bayeux.Channel;
 import org.cometd.bayeux.Message;
 import org.cometd.bayeux.client.ClientSessionChannel;
 import org.cometd.client.BayeuxClient;
-import org.cometd.client.http.okhttp.OkHttpClientTransport;
-import org.cometd.client.transport.ClientTransport;
-import org.cometd.client.websocket.okhttp.OkHttpWebSocketTransport;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+
+import cometd.client.service.BayeuxClientFactory;
 
 @Command(name = "subscribe", aliases = { "s" })
 public class SubscribeCommand implements Callable<Integer> {
 
   private String server;
   private String channel;
+  private long timeout;
+
+  private BayeuxClientFactory clientFactory = new BayeuxClientFactory();
+  private PrintStream out = System.out;
 
   @Override
   public Integer call() {
+    BayeuxClient client = this.clientFactory.create(this.server);
 
-    OkHttpClient ok = new OkHttpClient();
-    ClientTransport ws = new OkHttpWebSocketTransport(null, ok);
-    ClientTransport http = new OkHttpClientTransport(null, ok);
-    BayeuxClient bayeux = new BayeuxClient(this.server, ws, http);
-    bayeux.handshake();
-    // bayeux.getChannel(Channel.META_HANDSHAKE).addListener(new InitializerListener(bayeux));
-    // bayeux.getChannel(Channel.META_CONNECT).addListener(new ConnectionListener(bayeux));
-    bayeux.handshake();
-    boolean success = bayeux.waitFor(1000, BayeuxClient.State.CONNECTED);
-    if (!success) {
-        System.err.printf("Could not handshake with server at %s%n", this.server);
-        return 1;
+    client
+      .getChannel(Channel.META_HANDSHAKE)
+      .addListener((ClientSessionChannel.MessageListener) this::onHandshake);
+    client.handshake();
+
+    if (!client.waitFor(this.timeout, BayeuxClient.State.CONNECTED)) {
+      return -1;
     }
-    Map<String, Object> data = new HashMap<>();
-    data.put("user", "brandon");
-    data.put("chat", "test");
-    bayeux.getChannel("/chat/demo").publish(data);
 
+    client.waitFor(600000, BayeuxClient.State.DISCONNECTED);
     return 0;
   }
 
@@ -55,5 +48,26 @@ public class SubscribeCommand implements Callable<Integer> {
   @Parameters(index = "1", arity = "1")
   public void setChannel(String channel) {
     this.channel = channel;
+  }
+
+  @Option(names = { "-t", "--timeout" }, arity = "1", defaultValue = "1000")
+  public void setTimeout(long timeout) {
+    this.timeout = timeout;
+  }
+
+  public void setBayeuxClientFactory(BayeuxClientFactory clientFactory) {
+    this.clientFactory = clientFactory;
+  }
+
+  public void setOut(PrintStream out) {
+    this.out = out;
+  }
+
+  private void onHandshake(ClientSessionChannel channel, Message message) {
+    channel.getSession().getChannel(this.channel).subscribe(this::onMessage);
+  }
+
+  private void onMessage(ClientSessionChannel channel, Message message) {
+    this.out.println(message.getData());
   }
 }
