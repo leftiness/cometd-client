@@ -11,6 +11,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+import cometd.client.listener.HeartbeatListener;
 import cometd.client.listener.PrintStreamListener;
 import cometd.client.listener.SubscribeListener;
 import cometd.client.service.BayeuxClientFactory;
@@ -26,15 +27,21 @@ public class SubscribeCommand implements Callable<Integer> {
 
   @Override
   public Integer call() {
-    PrintStreamListener printer = new PrintStreamListener();
-    printer.setOut(System.out);
+    PrintStreamListener print = new PrintStreamListener();
+    print.setOut(System.out);
 
-    SubscribeListener subscriber = new SubscribeListener();
-    subscriber.setChannels(this.channels);
-    subscriber.setListener(printer);
+    SubscribeListener subscribe = new SubscribeListener();
+    subscribe.setChannels(this.channels);
+    subscribe.setListener(print);
+
+    HeartbeatListener heartbeat = new HeartbeatListener();
+    ClientSessionChannel.MessageListener onConnect = heartbeat::onConnect;
+    ClientSessionChannel.MessageListener onDisconnect = heartbeat::onDisconnect;
 
     BayeuxClient client = this.clientFactory.create(this.server);
-    client.getChannel(Channel.META_HANDSHAKE).addListener(subscriber);
+    client.getChannel(Channel.META_HANDSHAKE).addListener(subscribe);
+    client.getChannel(Channel.META_CONNECT).addListener(onConnect);
+    client.getChannel(Channel.META_DISCONNECT).addListener(onDisconnect);
     client.handshake();
 
     if (!client.waitFor(this.timeout, BayeuxClient.State.CONNECTED)) {
