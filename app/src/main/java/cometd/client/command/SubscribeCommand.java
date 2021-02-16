@@ -11,16 +11,15 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-import cometd.client.listener.HeartbeatListener;
+import cometd.client.listener.HandshakeSubscribeListener;
 import cometd.client.listener.PrintStreamListener;
-import cometd.client.listener.SubscribeListener;
 import cometd.client.service.BayeuxClientFactory;
 
 @Command(name = "subscribe", aliases = { "s" })
 public class SubscribeCommand implements Callable<Integer> {
 
   private String server;
-  private String[] channels;
+  private String channel;
   private long timeout;
 
   private BayeuxClientFactory clientFactory = new BayeuxClientFactory();
@@ -28,20 +27,13 @@ public class SubscribeCommand implements Callable<Integer> {
   @Override
   public Integer call() {
     PrintStreamListener print = new PrintStreamListener();
-    print.setOut(System.out);
 
-    SubscribeListener subscribe = new SubscribeListener();
-    subscribe.setChannels(this.channels);
+    HandshakeSubscribeListener subscribe = new HandshakeSubscribeListener();
+    subscribe.setChannel(this.channel);
     subscribe.setListener(print);
-
-    HeartbeatListener heartbeat = new HeartbeatListener();
-    ClientSessionChannel.MessageListener onConnect = heartbeat::onConnect;
-    ClientSessionChannel.MessageListener onDisconnect = heartbeat::onDisconnect;
 
     BayeuxClient client = this.clientFactory.create(this.server);
     client.getChannel(Channel.META_HANDSHAKE).addListener(subscribe);
-    client.getChannel(Channel.META_CONNECT).addListener(onConnect);
-    client.getChannel(Channel.META_DISCONNECT).addListener(onDisconnect);
     client.handshake();
 
     if (!client.waitFor(this.timeout, BayeuxClient.State.CONNECTED)) {
@@ -60,9 +52,9 @@ public class SubscribeCommand implements Callable<Integer> {
     this.server = server;
   }
 
-  @Parameters(index = "1", arity = "1..*")
-  public void setChannels(String[] channels) {
-    this.channels = channels;
+  @Parameters(index = "1", arity = "1")
+  public void setChannels(String channel) {
+    this.channel = channel;
   }
 
   @Option(names = { "-t", "--timeout" }, arity = "1", defaultValue = Long.MAX_VALUE + "")

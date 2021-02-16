@@ -7,13 +7,20 @@ repositories {
     jcenter()
 }
 
+configurations.all {
+    resolutionStrategy {
+        force 'org.slf4j:slf4j-api:1.7.30'
+    }
+}
+
 dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
     implementation 'info.picocli:picocli:4.6.1'
     implementation 'org.cometd.java:cometd-java-client-http-okhttp:7.0.0'
     implementation 'org.cometd.java:cometd-java-client-websocket-okhttp:7.0.0'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.30'
     implementation 'org.eclipse.jetty:jetty-util-ajax:11.0.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.30'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
     testImplementation 'junit:junit:4.13'
 }
 
@@ -24,6 +31,11 @@ application {
 javafx {
     version = '11.0.2'
     modules = [ 'javafx.controls' ]
+}
+
+run {
+    def logLevel = project.findProperty 'logLevel' ?: 'info'
+    systemProperty 'org.slf4j.simpleLogger.defaultLogLevel', logLevel
 }
 
 sourceCompatibility = 11

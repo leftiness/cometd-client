@@ -8,7 +8,7 @@ import org.cometd.bayeux.client.ClientSessionChannel;
 
 public class PrintStreamListener implements ClientSessionChannel.MessageListener {
 
-  private PrintStream out;
+  private PrintStream out = System.out;
 
   @Override
   public void onMessage(ClientSessionChannel channel, Message message) {
