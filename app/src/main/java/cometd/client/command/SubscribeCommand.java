@@ -15,7 +15,11 @@ import cometd.client.listener.HandshakeSubscribeListener;
 import cometd.client.listener.PrintStreamListener;
 import cometd.client.service.BayeuxClientFactory;
 
-@Command(name = "subscribe", aliases = { "s" })
+@Command(
+  name = "subscribe",
+  aliases = { "s" },
+  mixinStandardHelpOptions = true
+)
 public class SubscribeCommand implements Callable<Integer> {
 
   private String server;
@@ -57,7 +61,12 @@ public class SubscribeCommand implements Callable<Integer> {
     this.channel = channel;
   }
 
-  @Option(names = { "-t", "--timeout" }, arity = "1", defaultValue = Long.MAX_VALUE + "")
+  @Option(
+    names = { "-t", "--timeout" },
+    description = "Choose how many milliseconds to wait for the connection. Default: ${DEFAULT-VALUE}",
+    arity = "1",
+    defaultValue = "60000"
+  )
   public void setTimeout(long timeout) {
     this.timeout = timeout;
   }

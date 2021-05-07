@@ -7,7 +7,11 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import picocli.CommandLine.Command;
 
-@Command(name = "cometd", subcommands = { SubscribeCommand.class })
+@Command(
+  name = "cometd",
+  subcommands = { SubscribeCommand.class },
+  mixinStandardHelpOptions = true
+)
 public class MainCommand extends Application implements Runnable {
   @Override
   public void run() {
