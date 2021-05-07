@@ -33,10 +33,5 @@ javafx {
     modules = [ 'javafx.controls' ]
 }
 
-run {
-    def logLevel = project.findProperty 'logLevel' ?: 'info'
-    systemProperty 'org.slf4j.simpleLogger.defaultLogLevel', logLevel
-}
-
 sourceCompatibility = 11
 targetCompatibility = 11
