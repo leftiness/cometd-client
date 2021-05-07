@@ -15,7 +15,7 @@ import picocli.CommandLine.Command;
 public class MainCommand extends Application implements Runnable {
   @Override
   public void run() {
-    launch();
+    super.launch();
   }
 
   @Override

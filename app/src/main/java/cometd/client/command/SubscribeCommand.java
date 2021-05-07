@@ -41,14 +41,14 @@ public class SubscribeCommand implements Callable<Integer> {
     client.handshake();
 
     if (!client.waitFor(this.timeout, BayeuxClient.State.CONNECTED)) {
-      return -1;
+      return ExitCode.ERROR_SUBSCRIBE_TIMEOUT;
     }
 
     if (!client.waitFor(Long.MAX_VALUE, BayeuxClient.State.DISCONNECTED)) {
-      return -2;
+      return ExitCode.ERROR_SUBSCRIBE_DISCONNECTED;
     }
 
-    return 0;
+    return ExitCode.OK;
   }
 
   @Parameters(index = "0", arity = "1")
