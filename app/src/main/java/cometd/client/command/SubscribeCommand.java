@@ -49,19 +49,27 @@ public class SubscribeCommand implements Callable<Integer> {
     return ExitCode.OK;
   }
 
-  @Parameters(index = "0", arity = "1")
+  @Parameters(
+    description = "Choose the CometD server",
+    index = "0",
+    arity = "1"
+  )
   public void setServer(String server) {
     this.server = server;
   }
 
-  @Parameters(index = "1", arity = "1")
+  @Parameters(
+    description = "Choose the CometD channel",
+    index = "1",
+    arity = "1"
+  )
   public void setChannel(String channel) {
     this.channel = channel;
   }
 
   @Option(
     names = { "-t", "--timeout" },
-    description = "Choose how many milliseconds to wait for the connection. Default: ${DEFAULT-VALUE}",
+    description = "Choose how many milliseconds to wait for the connection (Default: ${DEFAULT-VALUE})",
     arity = "1",
     defaultValue = "60000"
   )
