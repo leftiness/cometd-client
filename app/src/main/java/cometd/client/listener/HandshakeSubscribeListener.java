@@ -1,7 +1,6 @@
 package cometd.client.listener;
 
 import org.cometd.bayeux.Message;
-import org.cometd.bayeux.client.ClientSession;
 import org.cometd.bayeux.client.ClientSessionChannel;
 
 public class HandshakeSubscribeListener implements ClientSessionChannel.MessageListener {

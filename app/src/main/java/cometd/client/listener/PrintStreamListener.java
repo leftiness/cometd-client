@@ -1,6 +1,5 @@
 package cometd.client.listener;
 
-import java.io.IOException;
 import java.io.PrintStream;
 
 import org.cometd.bayeux.Message;

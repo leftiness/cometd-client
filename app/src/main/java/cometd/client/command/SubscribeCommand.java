@@ -1,10 +1,8 @@
 package cometd.client.command;
 
-import java.io.PrintStream;
 import java.util.concurrent.Callable;
 
 import org.cometd.bayeux.Channel;
-import org.cometd.bayeux.Message;
 import org.cometd.client.BayeuxClient.State;
 import org.cometd.client.BayeuxClient;
 import picocli.CommandLine.Command;
