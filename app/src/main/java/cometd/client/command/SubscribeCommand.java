@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 
 import org.cometd.bayeux.Channel;
 import org.cometd.bayeux.Message;
-import org.cometd.bayeux.client.ClientSessionChannel;
+import org.cometd.client.BayeuxClient.State;
 import org.cometd.client.BayeuxClient;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -40,11 +40,11 @@ public class SubscribeCommand implements Callable<Integer> {
     client.getChannel(Channel.META_HANDSHAKE).addListener(subscribe);
     client.handshake();
 
-    if (!client.waitFor(this.timeout, BayeuxClient.State.CONNECTED)) {
+    if (!client.waitFor(this.timeout, State.CONNECTED)) {
       return ExitCode.ERROR_SUBSCRIBE_TIMEOUT;
     }
 
-    if (!client.waitFor(Long.MAX_VALUE, BayeuxClient.State.DISCONNECTED)) {
+    if (!client.waitFor(Long.MAX_VALUE, State.DISCONNECTED)) {
       return ExitCode.ERROR_SUBSCRIBE_DISCONNECTED;
     }
 
