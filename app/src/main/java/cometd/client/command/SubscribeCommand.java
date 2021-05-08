@@ -55,7 +55,7 @@ public class SubscribeCommand implements Callable<Integer> {
   }
 
   @Parameters(index = "1", arity = "1")
-  public void setChannels(String channel) {
+  public void setChannel(String channel) {
     this.channel = channel;
   }
 
