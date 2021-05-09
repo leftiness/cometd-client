@@ -10,7 +10,7 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import cometd.client.listener.HandshakeSubscribeListener;
-import cometd.client.listener.PrintStreamListener;
+import cometd.client.listener.OutputStreamListener;
 import cometd.client.service.BayeuxClientFactory;
 
 @Command(
@@ -28,11 +28,11 @@ public class SubscribeCommand implements Callable<Integer> {
 
   @Override
   public Integer call() {
-    PrintStreamListener print = new PrintStreamListener();
+    OutputStreamListener out = new OutputStreamListener();
 
     HandshakeSubscribeListener subscribe = new HandshakeSubscribeListener();
     subscribe.setChannel(this.channel);
-    subscribe.setListener(print);
+    subscribe.setListener(out);
 
     BayeuxClient client = this.clientFactory.create(this.server);
     client.getChannel(Channel.META_HANDSHAKE).addListener(subscribe);

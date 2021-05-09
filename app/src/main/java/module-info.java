@@ -1,4 +1,5 @@
 module cometd.client {
+    requires com.fasterxml.jackson.databind;
     requires info.picocli;
     requires javafx.controls;
     requires kotlin.stdlib;
